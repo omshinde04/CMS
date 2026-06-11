@@ -268,3 +268,22 @@ exports.login = async (req, res) => {
 
 
 };
+
+
+//profile controller
+exports.profile = async (req, res) => {
+
+
+    res.status(200).json({
+
+
+        success: true,
+
+
+        user: req.user
+
+
+    });
+
+
+};
