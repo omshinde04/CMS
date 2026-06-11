@@ -1,0 +1,21 @@
+# dependencies
+node_modules/
+
+# environment
+.env
+backend/.env
+
+# logs
+*.log
+
+# uploads
+backend/uploads/*
+
+# docker
+.docker/
+
+# OS
+.DS_Store
+
+# vscode
+.vscode/
