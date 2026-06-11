@@ -6,33 +6,65 @@ const morgan = require("morgan");
 require("dotenv").config();
 
 
-// Database connection
+// ================================
+// DATABASE CONNECTION
+// ================================
+
 require("./config/db");
 
+
+
+// ================================
+// ROUTE IMPORTS
+// ================================
+
+const authRoutes = require("./routes/authRoutes");
+
+
+
+// ================================
+// EXPRESS APP
+// ================================
 
 const app = express();
 
 
-// middlewares
 
+// ================================
+// GLOBAL MIDDLEWARES
+// ================================
+
+// allow json request body
 app.use(express.json());
 
+
+// allow frontend connection
 app.use(cors());
 
+
+// add security headers
 app.use(helmet());
 
+
+// request logger
 app.use(morgan("dev"));
 
 
 
-// test route
+
+// ================================
+// HEALTH CHECK ROUTE
+// ================================
 
 app.get("/", (req, res) => {
 
 
-    res.json({
+    res.status(200).json({
 
-        message: "Subhash Deshmukh Digital Platform API Running"
+        success: true,
+
+        message:
+            "Subhash Deshmukh Digital Platform API Running"
 
     });
 
@@ -41,8 +73,46 @@ app.get("/", (req, res) => {
 
 
 
-const PORT = process.env.PORT || 5060;
 
+// ================================
+// API ROUTES
+// ================================
+
+app.use(
+    "/api/auth",
+    authRoutes
+);
+
+
+
+
+// ================================
+// HANDLE UNKNOWN ROUTES
+// ================================
+
+app.use((req, res) => {
+
+
+    res.status(404).json({
+
+        success: false,
+
+        message: "API route not found"
+
+    });
+
+
+});
+
+
+
+
+
+// ================================
+// SERVER LISTENER
+// ================================
+
+const PORT = process.env.PORT || 5060;
 
 
 app.listen(PORT, () => {

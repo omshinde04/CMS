@@ -2,27 +2,48 @@
 
 CREATE TABLE IF NOT EXISTS users(
 
-
 id SERIAL PRIMARY KEY,
-
 
 name VARCHAR(100) NOT NULL,
 
 
-email VARCHAR(100) UNIQUE NOT NULL,
+email VARCHAR(150)
+UNIQUE NOT NULL,
 
 
 password TEXT NOT NULL,
 
 
 role VARCHAR(50)
+CHECK(
+role IN
+(
+'super_admin',
+'admin',
+'content_manager',
+'complaint_manager'
+)
+)
 DEFAULT 'admin',
 
 
-created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+status VARCHAR(20)
+CHECK(
+status IN(
+'active',
+'inactive'
+)
+)
+DEFAULT 'active',
 
+
+created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+
+updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 
 );
+
 
 
 
