@@ -23,7 +23,8 @@ const complaintRoutes =
     require("./routes/complaintRoutes");
 const blogRoutes = require("./routes/blogRoutes");
 const galleryRoutes = require("./routes/galleryRoutes");
-
+const dashboardRoutes =
+    require("./routes/dashboardRoutes");
 
 
 // ================================
@@ -102,6 +103,12 @@ app.use(
     galleryRoutes
 );
 
+
+//dashboard route
+app.use(
+    "/api/dashboard",
+    dashboardRoutes
+);
 // ================================
 // HANDLE UNKNOWN ROUTES
 // ================================
