@@ -283,7 +283,7 @@ Main Tables:
 * blogs
 * gallery
 * appointments
-* audit_logs
+<!-- * audit_logs -->
 
 Database initialization:
 

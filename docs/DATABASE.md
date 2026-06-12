@@ -94,10 +94,10 @@ Stores citizen appointment requests.
 ---
 
 
-### audit_logs
+<!-- ### audit_logs
 
 
-Stores administrative activities.
+Stores administrative activities. -->
 
 
 

@@ -231,20 +231,20 @@ created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 
 
 
--- AUDIT LOGS
+-- -- AUDIT LOGS
 
 
-CREATE TABLE IF NOT EXISTS audit_logs(
+-- CREATE TABLE IF NOT EXISTS audit_logs(
 
-id SERIAL PRIMARY KEY,
-
-
-user_id INT REFERENCES users(id),
+-- id SERIAL PRIMARY KEY,
 
 
-action TEXT,
+-- user_id INT REFERENCES users(id),
 
 
-created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+-- action TEXT,
 
-);
+
+-- created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+-- );
