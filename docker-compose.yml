@@ -1,4 +1,14 @@
+# Docker Compose manages all containers of Leader Digital Platform
+# Services:
+# 1. PostgreSQL Database
+# 2. Node.js Express Backend
+# 3. Next.js Frontend
+
 services:
+
+  # ===============================
+  # PostgreSQL Database Container
+  # ===============================
 
   postgres:
 
@@ -6,47 +16,116 @@ services:
 
     container_name: subhash_postgres
 
+    # Database credentials
     environment:
 
       POSTGRES_USER: postgres
+
       POSTGRES_PASSWORD: root
+
       POSTGRES_DB: subhash_platform
 
+    # Host Port : Container Port
     ports:
 
       - "5432:5432"
 
+    # Persist database data
+    # Run init.sql automatically on first start
     volumes:
 
       - postgres_data:/var/lib/postgresql/data
 
       - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
 
+  # ===============================
+  # Backend Container
+  # Node.js + Express API
+  # ===============================
+
   backend:
 
+    # Build backend image from backend/Dockerfile
     build:
 
       context: ./backend
 
     container_name: subhash_backend
 
+    # Local machine : Docker container
+    #
+    # localhost:8080
+    #        |
+    # Express inside Docker :5060
+
     ports:
 
       - "8080:5060"
+
+    # Load backend environment variables
 
     env_file:
 
       - ./backend/.env
 
+    # Backend starts after database container
+
     depends_on:
 
       - postgres
+
+    # Development hot reload support
 
     volumes:
 
       - ./backend:/app
 
       - /app/node_modules
+
+  # ===============================
+  # Frontend Container
+  # Next.js Application
+  # ===============================
+
+  frontend:
+
+    # Build frontend image from frontend/Dockerfile
+
+    build:
+
+      context: ./frontend
+
+    container_name: subhash_frontend
+
+    # Browser access:
+    #
+    # localhost:3000
+    #
+    # Next.js runs inside container on 3000
+
+    ports:
+
+      - "3000:3000"
+
+    # Start frontend after backend
+
+    depends_on:
+
+      - backend
+
+    # Enable live code changes
+
+    volumes:
+
+      - ./frontend:/app
+
+      - /app/node_modules
+
+# ===============================
+# Docker Volumes
+# ===============================
+# Keeps PostgreSQL data safe even
+# if container stops/restarts
 
 volumes:
 
