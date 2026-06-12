@@ -22,6 +22,7 @@ const authRoutes = require("./routes/authRoutes");
 const complaintRoutes =
     require("./routes/complaintRoutes");
 const blogRoutes = require("./routes/blogRoutes");
+const galleryRoutes = require("./routes/galleryRoutes");
 
 
 
@@ -95,7 +96,11 @@ app.use(
     "/api/blogs",
     blogRoutes
 );
-
+//Gallery Routes
+app.use(
+    "/api/gallery",
+    galleryRoutes
+);
 
 // ================================
 // HANDLE UNKNOWN ROUTES
