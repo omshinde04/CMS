@@ -25,6 +25,8 @@ const blogRoutes = require("./routes/blogRoutes");
 const galleryRoutes = require("./routes/galleryRoutes");
 const dashboardRoutes =
     require("./routes/dashboardRoutes");
+const appointmentRoutes =
+    require("./routes/appointmentRoutes");
 
 
 // ================================
@@ -109,6 +111,13 @@ app.use(
     "/api/dashboard",
     dashboardRoutes
 );
+
+//appointment route
+app.use(
+    "/api/appointment",
+    appointmentRoutes
+);
+
 // ================================
 // HANDLE UNKNOWN ROUTES
 // ================================
