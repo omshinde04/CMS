@@ -21,7 +21,7 @@ require("./config/db");
 const authRoutes = require("./routes/authRoutes");
 const complaintRoutes =
     require("./routes/complaintRoutes");
-
+const blogRoutes = require("./routes/blogRoutes");
 
 
 
@@ -90,7 +90,11 @@ app.use(
     "/api/complaints",
     complaintRoutes
 );
-
+//blogRoutes
+app.use(
+    "/api/blogs",
+    blogRoutes
+);
 
 
 // ================================
