@@ -2,7 +2,9 @@ const pool = require("../config/db");
 
 
 
+// ======================================
 // CREATE COMPLAINT
+// ======================================
 
 
 exports.createComplaint = async (req, res) => {
@@ -30,38 +32,39 @@ exports.createComplaint = async (req, res) => {
 
 
 
-        const complaintCode =
 
+        const complaintCode =
             "COMP-" + Date.now();
 
 
 
 
-        const complaint =
 
+
+
+        const complaint =
             await pool.query(
 
                 `
-INSERT INTO complaints
 
-(
-complaint_code,
-citizen_name,
-phone,
-email,
-category,
-title,
-description
-)
+                INSERT INTO complaints
 
-VALUES
+                (
+                    complaint_code,
+                    citizen_name,
+                    phone,
+                    email,
+                    category,
+                    title,
+                    description
+                )
 
-($1,$2,$3,$4,$5,$6,$7)
+                VALUES($1,$2,$3,$4,$5,$6,$7)
 
+                RETURNING *
 
-RETURNING *
+                `,
 
-`,
 
                 [
 
@@ -81,14 +84,18 @@ RETURNING *
 
                 ]
 
-
             );
 
 
 
 
 
-        // save images
+
+
+
+
+
+        // SAVE IMAGES
 
 
         if (req.files) {
@@ -97,18 +104,21 @@ RETURNING *
             for (let file of req.files) {
 
 
-
                 await pool.query(
 
                     `
 
-INSERT INTO complaint_images
+                    INSERT INTO complaint_images
 
-(complaint_id,image)
+                    (
+                        complaint_id,
+                        image
+                    )
 
-VALUES($1,$2)
+                    VALUES($1,$2)
 
-`,
+                    `,
+
 
                     [
 
@@ -129,16 +139,24 @@ VALUES($1,$2)
 
 
 
+
+
+
+
+
+
         res.status(201).json({
 
 
             success: true,
 
 
-            message: "Complaint submitted successfully",
+            message:
+                "Complaint submitted successfully",
 
 
-            trackingId: complaintCode
+            trackingId:
+                complaintCode
 
 
         });
@@ -147,7 +165,235 @@ VALUES($1,$2)
 
 
 
+
+
     }
+
+
+    catch (error) {
+
+
+
+        res.status(500).json({
+
+
+            success: false,
+
+
+            message: error.message
+
+
+        });
+
+
+
+    }
+
+
+
+};
+
+
+
+
+
+
+
+
+
+
+
+
+// ======================================
+// TRACK COMPLAINT
+// ======================================
+
+
+exports.trackComplaint = async (req, res) => {
+
+
+    try {
+
+
+        const result =
+            await pool.query(
+
+                `
+
+                SELECT *
+
+                FROM complaints
+
+                WHERE complaint_code=$1
+
+                `,
+
+
+                [
+                    req.params.id
+                ]
+
+            );
+
+
+
+
+
+
+
+        if (result.rows.length === 0) {
+
+
+            return res.status(404).json({
+
+
+                success: false,
+
+
+                message: "Complaint not found"
+
+
+            });
+
+
+        }
+
+
+
+
+
+
+
+        res.json({
+
+
+            success: true,
+
+
+            complaint:
+                result.rows[0]
+
+
+        });
+
+
+
+
+
+
+    }
+
+
+    catch (error) {
+
+
+        res.status(500).json({
+
+
+            success: false,
+
+
+            message: error.message
+
+
+        });
+
+
+    }
+
+
+
+};
+
+
+
+
+
+
+
+
+
+
+
+
+// ======================================
+// ADMIN GET ALL COMPLAINTS
+// ======================================
+
+
+// ======================================
+// ADMIN GET ALL COMPLAINTS WITH IMAGES
+// ======================================
+
+
+exports.getComplaints = async (req, res) => {
+
+
+    try {
+
+
+        const complaints =
+            await pool.query(
+
+                `
+
+                SELECT
+
+                c.*,
+
+                COALESCE(
+
+                    json_agg(
+                        ci.image
+                    )
+
+                    FILTER(
+                        WHERE ci.image IS NOT NULL
+                    ),
+
+                    '[]'
+
+                ) AS images
+
+
+                FROM complaints c
+
+
+                LEFT JOIN complaint_images ci
+
+                ON c.id = ci.complaint_id
+
+
+
+                GROUP BY c.id
+
+
+                ORDER BY c.created_at DESC
+
+
+                `
+
+            );
+
+
+
+
+
+
+        res.json({
+
+            success: true,
+
+            complaints: complaints.rows
+
+        });
+
+
+
+
+
+    }
+
 
     catch (error) {
 
@@ -168,148 +414,42 @@ VALUES($1,$2)
 };
 
 
-//Tracking function 
-exports.trackComplaint = async (req, res) => {
 
 
-    try {
 
 
-        const result =
 
-            await pool.query(
+// ======================================
+// ADMIN UPDATE STATUS
+// ======================================
 
-                `
 
-SELECT *
-
-FROM complaints
-
-WHERE complaint_code=$1
-
-`,
-
-                [req.params.id]
-
-            );
-
-
-
-        if (result.rows.length === 0) {
-
-
-            return res.status(404).json({
-
-                message: "Complaint not found"
-
-            });
-
-
-        }
-
-
-
-
-        res.json({
-
-            success: true,
-
-            complaint: result.rows[0]
-
-        });
-
-
-
-
-    }
-
-    catch (error) {
-
-
-        res.status(500).json({
-
-            message: error.message
-
-        });
-
-
-    }
-
-
-};
-
-
-//Admin Get All Complaints
-
-exports.getComplaints = async (req, res) => {
-
-
-    try {
-
-
-        const complaints =
-
-            await pool.query(
-
-                `
-
-SELECT *
-
-FROM complaints
-
-ORDER BY created_at DESC
-
-`
-
-            );
-
-
-
-        res.json({
-
-            success: true,
-
-            complaints: complaints.rows
-
-        });
-
-
-
-
-    }
-
-    catch (error) {
-
-
-        res.status(500).json({
-
-            message: error.message
-
-        });
-
-
-    }
-
-
-};
-
-//Admin Update Status
 exports.updateStatus = async (req, res) => {
 
 
     try {
 
 
-        const { status, remark } = req.body;
+        const {
+
+            status,
+
+            remark
+
+        } = req.body;
 
 
-        const id = req.params.id;
+
+        const id =
+            req.params.id;
+
+
+
 
 
 
 
         const oldComplaint =
-
             await pool.query(
 
                 "SELECT * FROM complaints WHERE id=$1",
@@ -320,19 +460,55 @@ exports.updateStatus = async (req, res) => {
 
 
 
+
+
+
+
+        if (oldComplaint.rows.length === 0) {
+
+
+            return res.status(404).json({
+
+
+                success: false,
+
+
+                message: "Complaint not found"
+
+
+            });
+
+
+        }
+
+
+
+
+
+
+
+
+
         await pool.query(
 
             `
 
-UPDATE complaints
+            UPDATE complaints
 
-SET status=$1
+            SET status=$1
 
-WHERE id=$2
+            WHERE id=$2
 
-`,
+            `,
 
-            [status, id]
+
+            [
+
+                status,
+
+                id
+
+            ]
 
         );
 
@@ -340,25 +516,29 @@ WHERE id=$2
 
 
 
+
+
+
+
         await pool.query(
 
             `
 
-INSERT INTO complaint_history
+            INSERT INTO complaint_history
 
-(
-complaint_id,
-old_status,
-new_status,
-remark,
-updated_by
-)
+            (
+                complaint_id,
+                old_status,
+                new_status,
+                remark,
+                updated_by
+            )
 
-VALUES
 
-($1,$2,$3,$4,$5)
+            VALUES($1,$2,$3,$4,$5)
 
-`,
+            `,
+
 
             [
 
@@ -380,24 +560,169 @@ VALUES
 
 
 
+
+
+
+
+
+
         res.json({
+
 
             success: true,
 
+
             message: "Status updated"
+
 
         });
 
 
 
+
+
     }
+
 
     catch (error) {
 
 
+
         res.status(500).json({
 
+
+            success: false,
+
+
             message: error.message
+
+
+        });
+
+
+    }
+
+
+
+};
+
+
+
+
+
+
+
+
+
+
+
+// ======================================
+// ADMIN DELETE COMPLAINT
+// ======================================
+
+
+exports.deleteComplaint = async (req, res) => {
+
+
+    try {
+
+
+        const id =
+            req.params.id;
+
+
+
+
+
+
+        const complaint =
+            await pool.query(
+
+                "SELECT * FROM complaints WHERE id=$1",
+
+                [id]
+
+            );
+
+
+
+
+
+
+
+        if (complaint.rows.length === 0) {
+
+
+            return res.status(404).json({
+
+
+                success: false,
+
+
+                message: "Complaint not found"
+
+
+            });
+
+
+        }
+
+
+
+
+
+
+
+
+
+        await pool.query(
+
+            "DELETE FROM complaints WHERE id=$1",
+
+            [id]
+
+        );
+
+
+
+
+
+
+
+
+
+
+        res.json({
+
+
+            success: true,
+
+
+            message:
+                "Complaint deleted successfully"
+
+
+        });
+
+
+
+
+
+    }
+
+
+    catch (error) {
+
+
+
+        res.status(500).json({
+
+
+            success: false,
+
+
+            message: error.message
+
 
         });
 

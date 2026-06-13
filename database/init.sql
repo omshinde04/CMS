@@ -109,6 +109,38 @@ image TEXT
 );
 
 
+-- =====================================
+-- CONTACT MESSAGES TABLE
+-- =====================================
+
+CREATE TABLE IF NOT EXISTS contacts(
+
+    id SERIAL PRIMARY KEY,
+
+
+    name VARCHAR(150) NOT NULL,
+
+
+    email VARCHAR(200) NOT NULL,
+
+
+    phone VARCHAR(20),
+
+
+    subject VARCHAR(200),
+
+
+    message TEXT NOT NULL,
+
+
+    status VARCHAR(30)
+    DEFAULT 'new',
+
+
+    created_at TIMESTAMP
+    DEFAULT CURRENT_TIMESTAMP
+
+);
 
 -- COMPLAINT HISTORY
 

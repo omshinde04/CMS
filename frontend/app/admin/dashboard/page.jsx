@@ -1,2 +1,21 @@
-// Admin Dashboard — UI built in a dedicated step
-export default function AdminDashboardPage() { return null; }
+import DashboardHome from "@/components/admin/DashboardHome";
+
+
+
+
+
+export default function Dashboard() {
+
+
+
+    return (
+
+
+        <DashboardHome />
+
+
+    );
+
+
+
+}

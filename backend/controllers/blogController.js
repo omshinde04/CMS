@@ -1,66 +1,49 @@
 const pool = require("../config/db");
 
 
-// CREATE BLOG
 
+
+// ===============================
+// CREATE BLOG
+// ===============================
 
 exports.createBlog = async (req, res) => {
 
-
     try {
 
-
         const {
-
             title,
-
             slug,
-
             content
-
         } = req.body;
 
 
-
         const image = req.file
-            ?
-            req.file.filename
-            :
-            null;
+            ? req.file.filename
+            : null;
 
 
 
-        const blog =
+        const result = await pool.query(
 
-            await pool.query(
+            `
+            INSERT INTO blogs
+            (title,slug,content,image,created_by)
 
-                `
+            VALUES($1,$2,$3,$4,$5)
 
-INSERT INTO blogs
+            RETURNING *
+            `,
 
-(title,slug,content,image,created_by)
+            [
+                title,
+                slug,
+                content,
+                image,
+                req.user.id
+            ]
 
-VALUES($1,$2,$3,$4,$5)
-
-RETURNING *
-
-`,
-
-                [
-
-                    title,
-
-                    slug,
-
-                    content,
-
-                    image,
-
-                    req.user.id
-
-                ]
-
-            );
+        );
 
 
 
@@ -69,6 +52,148 @@ RETURNING *
             success: true,
 
             message: "Blog created",
+
+            blog: result.rows[0]
+
+        });
+
+
+
+    }
+    catch (error) {
+
+        res.status(500).json({
+
+            success: false,
+
+            message: error.message
+
+        });
+
+    }
+
+};
+
+
+
+
+
+
+
+
+
+// ===============================
+// GET ALL BLOGS
+// PUBLIC
+// ===============================
+
+
+exports.getBlogs = async (req, res) => {
+
+
+    try {
+
+
+        const blogs = await pool.query(
+
+            `
+            SELECT *
+            FROM blogs
+            ORDER BY created_at DESC
+            `
+
+        );
+
+
+
+        res.json({
+
+            success: true,
+
+            blogs: blogs.rows
+
+        });
+
+
+    }
+    catch (error) {
+
+
+        res.status(500).json({
+
+            success: false,
+
+            message: error.message
+
+        });
+
+
+    }
+
+
+};
+
+
+
+
+
+
+
+
+
+// ===============================
+// GET BLOG BY SLUG
+// PUBLIC
+// ===============================
+
+
+exports.getBlogBySlug = async (req, res) => {
+
+
+    try {
+
+
+        const { slug } = req.params;
+
+
+
+        const blog = await pool.query(
+
+            `
+            SELECT *
+            FROM blogs
+            WHERE slug=$1
+            `,
+
+            [slug]
+
+        );
+
+
+
+
+
+        if (blog.rows.length === 0) {
+
+
+            return res.status(404).json({
+
+                success: false,
+
+                message: "Blog not found"
+
+            });
+
+        }
+
+
+
+
+
+
+        res.json({
+
+            success: true,
 
             blog: blog.rows[0]
 
@@ -99,30 +224,132 @@ RETURNING *
 
 
 
-// GET ALL BLOGS PUBLIC
 
 
-exports.getBlogs = async (req, res) => {
+
+
+
+// ===============================
+// UPDATE BLOG
+// ===============================
+
+
+exports.updateBlog = async (req, res) => {
 
 
     try {
 
 
-        const blogs =
+        const {
 
-            await pool.query(
+            title,
 
-                `
+            slug,
 
-SELECT *
+            content
 
-FROM blogs
 
-ORDER BY created_at DESC
+        } = req.body;
 
-`
 
-            );
+
+
+        const { id } = req.params;
+
+
+
+
+
+        const oldBlog = await pool.query(
+
+            `
+            SELECT *
+            FROM blogs
+            WHERE id=$1
+            `,
+
+            [id]
+
+        );
+
+
+
+
+
+
+        if (oldBlog.rows.length === 0) {
+
+
+            return res.status(404).json({
+
+                success: false,
+
+                message: "Blog not found"
+
+            });
+
+        }
+
+
+
+
+
+
+        const image = req.file
+
+            ? req.file.filename
+
+            : oldBlog.rows[0].image;
+
+
+
+
+
+
+
+
+        const updated = await pool.query(
+
+            `
+            UPDATE blogs
+
+            SET
+
+            title=$1,
+
+            slug=$2,
+
+            content=$3,
+
+            image=$4
+
+
+            WHERE id=$5
+
+
+            RETURNING *
+            `,
+
+            [
+
+                title,
+
+                slug,
+
+                content,
+
+                image,
+
+                id
+
+            ]
+
+
+        );
+
+
+
+
 
 
 
@@ -130,9 +357,13 @@ ORDER BY created_at DESC
 
             success: true,
 
-            blogs: blogs.rows
+            message: "Blog updated",
+
+            blog: updated.rows[0]
 
         });
+
+
 
 
     }
@@ -142,11 +373,15 @@ ORDER BY created_at DESC
 
         res.status(500).json({
 
+            success: false,
+
             message: error.message
 
         });
 
+
     }
+
 
 
 };
@@ -154,8 +389,15 @@ ORDER BY created_at DESC
 
 
 
-// DELETE BLOG
 
+
+
+
+
+
+// ===============================
+// DELETE BLOG
+// ===============================
 
 
 exports.deleteBlog = async (req, res) => {
@@ -166,11 +408,15 @@ exports.deleteBlog = async (req, res) => {
 
         await pool.query(
 
-            "DELETE FROM blogs WHERE id=$1",
+            `
+            DELETE FROM blogs
+            WHERE id=$1
+            `,
 
             [req.params.id]
 
         );
+
 
 
 
@@ -183,12 +429,16 @@ exports.deleteBlog = async (req, res) => {
         });
 
 
+
+
     }
 
     catch (error) {
 
 
         res.status(500).json({
+
+            success: false,
 
             message: error.message
 
@@ -198,7 +448,4 @@ exports.deleteBlog = async (req, res) => {
     }
 
 
-
 };
-
-

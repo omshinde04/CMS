@@ -1,2 +1,10 @@
-// Admin Blogs — UI built in a dedicated step
-export default function AdminBlogsPage() { return null; }
+import BlogPage from "@/components/admin/blogs/BlogPage";
+
+
+export default function Page() {
+
+
+    return <BlogPage />;
+
+
+}

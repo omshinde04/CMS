@@ -1,2 +1,10 @@
-// Admin Complaints — UI built in a dedicated step
-export default function AdminComplaintsPage() { return null; }
+import ComplaintPage from "@/components/admin/complaints/ComplaintPage";
+
+
+export default function Page() {
+
+
+    return <ComplaintPage />
+
+
+}

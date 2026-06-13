@@ -1,2 +1,11 @@
-// Admin Gallery — UI built in a dedicated step
-export default function AdminGalleryPage() { return null; }
+import GalleryPage from "@/components/admin/gallery/GalleryPage";
+
+
+
+export default function Page() {
+
+
+    return <GalleryPage />
+
+
+}

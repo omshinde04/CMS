@@ -1,15 +1,100 @@
-import api from './api';
+import api from "./api";
+
+
+
 
 export const appointmentService = {
-  // Public: book appointment
-  book: (payload) =>
-    api.post('/appointments', payload).then((r) => r.data),
 
-  // Admin: get all appointments
-  getAll: (params = {}) =>
-    api.get('/appointments/admin/all', { params }).then((r) => r.data),
 
-  // Admin: update appointment status
-  updateStatus: (id, status) =>
-    api.patch(`/appointments/status/${id}`, { status }).then((r) => r.data),
+
+
+  // ================================
+  // PUBLIC CREATE APPOINTMENT
+  // ================================
+
+
+  create: async (payload) => {
+
+
+    const { data } =
+      await api.post(
+
+        "/appointments",
+
+        payload
+
+      );
+
+
+
+    return data;
+
+
+  },
+
+
+
+
+
+
+
+
+
+  // ================================
+  // ADMIN GET ALL
+  // ================================
+
+
+  getAll: async () => {
+
+
+    const { data } =
+      await api.get(
+
+        "/appointments/admin/all"
+
+      );
+
+
+
+    return data;
+
+
+  },
+
+
+
+
+
+
+
+
+
+  // ================================
+  // ADMIN UPDATE STATUS
+  // ================================
+
+
+  updateStatus: async (id, payload) => {
+
+
+    const { data } =
+      await api.patch(
+
+        `/appointments/status/${id}`,
+
+        payload
+
+      );
+
+
+
+    return data;
+
+
+  }
+
+
+
+
 };

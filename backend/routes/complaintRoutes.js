@@ -1,13 +1,24 @@
 const express = require("express");
 
+
 const router = express.Router();
 
 
-const upload = require("../middleware/uploadMiddleware");
 
-const protect = require("../middleware/authMiddleware");
+const upload =
+    require("../middleware/uploadMiddleware");
 
-const authorize = require("../middleware/roleMiddleware");
+
+const protect =
+    require("../middleware/authMiddleware");
+
+
+const authorize =
+    require("../middleware/roleMiddleware");
+
+
+
+
 
 
 
@@ -16,11 +27,17 @@ const {
 
     createComplaint,
 
+
     trackComplaint,
+
 
     getComplaints,
 
-    updateStatus
+
+    updateStatus,
+
+
+    deleteComplaint
 
 
 } = require("../controllers/complaintController");
@@ -28,69 +45,171 @@ const {
 
 
 
-// citizen
+
+
+
+
+
+// ================================
+// CITIZEN CREATE COMPLAINT
+// ================================
 
 
 router.post(
 
     "/",
 
-    upload.array("images", 5),
+
+    upload.array(
+        "images",
+        5
+    ),
+
 
     createComplaint
 
+
 );
 
+
+
+
+
+
+
+
+
+
+// ================================
+// CITIZEN TRACK COMPLAINT
+// ================================
 
 
 router.get(
 
     "/track/:id",
 
+
     trackComplaint
+
 
 );
 
 
 
 
-// admin
+
+
+
+
+
+
+// ================================
+// ADMIN GET ALL
+// ================================
 
 
 router.get(
 
     "/admin/all",
 
+
     protect,
 
+
     authorize(
+
         "super_admin",
+
         "admin",
+
         "complaint_manager"
+
     ),
 
+
     getComplaints
+
 
 );
 
 
 
+
+
+
+
+
+
+// ================================
+// ADMIN UPDATE STATUS
+// ================================
 
 
 router.patch(
 
     "/status/:id",
 
+
     protect,
 
+
     authorize(
+
         "super_admin",
+
+        "admin",
+
         "complaint_manager"
+
     ),
+
 
     updateStatus
 
+
 );
+
+
+
+
+
+
+
+
+
+// ================================
+// ADMIN DELETE COMPLAINT
+// ================================
+
+
+router.delete(
+
+    "/:id",
+
+
+    protect,
+
+
+    authorize(
+
+        "super_admin",
+
+        "admin",
+
+        "complaint_manager"
+
+    ),
+
+
+    deleteComplaint
+
+
+);
+
+
+
+
 
 
 

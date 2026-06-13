@@ -1,26 +1,126 @@
-import { AuthProvider } from '@/context/AuthContext';
-import './globals.css';
+import { Inter, Playfair_Display } from "next/font/google";
+
+
+import { AuthProvider } from "@/context/AuthContext";
+
+
+import AppLayout from "@/components/layout/AppLayout";
+
+
+import "./globals.css";
+
+
+
+
+
+
+const inter = Inter({
+
+  subsets: ["latin"],
+
+  variable: "--font-inter"
+
+});
+
+
+
+
+
+const playfair = Playfair_Display({
+
+  subsets: ["latin"],
+
+  variable: "--font-playfair"
+
+});
+
+
+
+
+
+
 
 export const metadata = {
-  title: 'Subhash Deshmukh — Leader Digital Platform',
+
+
+  title:
+    "Subhash Deshmukh — Leader Digital Platform",
+
+
+
   description:
-    'Official digital platform of Subhash Sureshchandra Deshmukh — serving the people of Solapur.',
+    "Official digital platform of Subhash Sureshchandra Deshmukh."
+
+
 };
 
+
+
+
+
+
+
+
+
 export default function RootLayout({ children }) {
+
+
   return (
+
+
     <html lang="en">
-      <head>
-        <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap"
-          rel="stylesheet"
-        />
-      </head>
-      <body className="font-sans antialiased bg-white text-navy-900">
+
+
+
+      <body
+
+        className={`
+                ${inter.variable}
+                ${playfair.variable}
+
+                font-sans
+                antialiased
+
+                bg-white
+                text-navy-900
+                `}
+
+      >
+
+
+
+
+
         <AuthProvider>
-          {children}
+
+
+
+          <AppLayout>
+
+
+            {children}
+
+
+          </AppLayout>
+
+
+
+
         </AuthProvider>
+
+
+
+
+
+
       </body>
+
+
+
     </html>
+
+
   );
+
+
 }

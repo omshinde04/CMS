@@ -91,6 +91,7 @@ router.delete(
     authorize(
 
         "super_admin",
+        "admin",
 
         "content_manager"
 

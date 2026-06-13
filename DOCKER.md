@@ -771,5 +771,3 @@ docker compose up --build
 No manual PostgreSQL installation required.
 
 The same environment works across different machines.
-
----

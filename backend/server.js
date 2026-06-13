@@ -1,9 +1,16 @@
 const express = require("express");
+
 const cors = require("cors");
+
 const helmet = require("helmet");
+
 const morgan = require("morgan");
 
+const path = require("path");
+
+
 require("dotenv").config();
+
 
 
 // ================================
@@ -14,26 +21,54 @@ require("./config/db");
 
 
 
+
 // ================================
 // ROUTE IMPORTS
 // ================================
 
-const authRoutes = require("./routes/authRoutes");
+
+const authRoutes =
+    require("./routes/authRoutes");
+
+
 const complaintRoutes =
     require("./routes/complaintRoutes");
-const blogRoutes = require("./routes/blogRoutes");
-const galleryRoutes = require("./routes/galleryRoutes");
+
+
+const blogRoutes =
+    require("./routes/blogRoutes");
+
+
+const galleryRoutes =
+    require("./routes/galleryRoutes");
+
+
 const dashboardRoutes =
     require("./routes/dashboardRoutes");
+
+
 const appointmentRoutes =
     require("./routes/appointmentRoutes");
+
+
+const contactRoutes =
+    require("./routes/contactRoutes");
+
+
+
 
 
 // ================================
 // EXPRESS APP
 // ================================
 
+
 const app = express();
+
+
+
+
+
 
 
 
@@ -41,20 +76,92 @@ const app = express();
 // GLOBAL MIDDLEWARES
 // ================================
 
-// allow json request body
-app.use(express.json());
 
 
-// allow frontend connection
-app.use(cors());
+// JSON BODY
+
+app.use(
+    express.json()
+);
 
 
-// add security headers
-app.use(helmet());
 
 
-// request logger
-app.use(morgan("dev"));
+// FRONTEND CONNECTION
+
+app.use(
+
+    cors({
+
+        origin: "*",
+
+        credentials: true
+
+    })
+
+);
+
+
+
+
+// SECURITY HEADERS
+
+app.use(
+
+    helmet({
+
+        crossOriginResourcePolicy: false
+
+    })
+
+);
+
+
+
+
+// LOGGER
+
+app.use(
+    morgan("dev")
+);
+
+
+
+
+
+
+
+
+
+// ================================
+// STATIC UPLOAD FILES
+// ================================
+
+
+app.use(
+
+    "/uploads",
+
+
+    express.static(
+
+        path.join(
+
+            __dirname,
+
+            "uploads"
+
+        )
+
+    )
+
+
+);
+
+
+
+
+
 
 
 
@@ -63,20 +170,41 @@ app.use(morgan("dev"));
 // HEALTH CHECK ROUTE
 // ================================
 
-app.get("/", (req, res) => {
+
+app.get(
+
+    "/",
 
 
-    res.status(200).json({
-
-        success: true,
-
-        message:
-            "Subhash Deshmukh Digital Platform API Running"
-
-    });
+    (req, res) => {
 
 
-});
+
+        res.status(200).json({
+
+
+
+            success: true,
+
+
+            message:
+                "Subhash Deshmukh Digital Platform API Running"
+
+
+
+        });
+
+
+
+    }
+
+
+);
+
+
+
+
+
 
 
 
@@ -85,56 +213,131 @@ app.get("/", (req, res) => {
 // API ROUTES
 // ================================
 
+
+// AUTH
+
 app.use(
+
     "/api/auth",
+
     authRoutes
+
 );
-//complaints 
+
+
+
+
+// COMPLAINTS
+
 app.use(
+
     "/api/complaints",
+
     complaintRoutes
+
 );
-//blogRoutes
+
+
+
+
+// BLOGS
+
 app.use(
+
     "/api/blogs",
+
     blogRoutes
+
 );
-//Gallery Routes
+
+
+
+
+// GALLERY
+
 app.use(
+
     "/api/gallery",
+
     galleryRoutes
+
 );
 
 
-//dashboard route
+
+
+// DASHBOARD
+
 app.use(
+
     "/api/dashboard",
+
     dashboardRoutes
+
 );
 
-//appointment route
+
+
+
+// APPOINTMENTS
+
 app.use(
-    "/api/appointment",
+
+    "/api/appointments",
+
     appointmentRoutes
+
 );
 
+
+//contact 
+
+app.use(
+
+    "/api/contact",
+
+    contactRoutes
+
+);
+
+
+
+
 // ================================
-// HANDLE UNKNOWN ROUTES
+// UNKNOWN ROUTE
 // ================================
 
-app.use((req, res) => {
+
+app.use(
+
+    (req, res) => {
 
 
-    res.status(404).json({
 
-        success: false,
-
-        message: "API route not found"
-
-    });
+        res.status(404).json({
 
 
-});
+
+            success: false,
+
+
+            message:
+                "API route not found"
+
+
+
+        });
+
+
+
+    }
+
+
+);
+
+
+
+
 
 
 
@@ -144,15 +347,29 @@ app.use((req, res) => {
 // SERVER LISTENER
 // ================================
 
-const PORT = process.env.PORT || 5060;
+
+const PORT =
+    process.env.PORT || 5060;
 
 
-app.listen(PORT, () => {
 
 
-    console.log(
-        `Server running on port ${PORT}`
-    );
+app.listen(
+
+    PORT,
 
 
-});
+    () => {
+
+
+        console.log(
+
+            `Server running on port ${PORT}`
+
+        );
+
+
+    }
+
+
+);
